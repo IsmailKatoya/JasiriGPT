@@ -19,6 +19,14 @@ Unlike traditional AI assistants that rely on cloud APIs, JasiriGPT is built on 
 - **Jan 2026:** Document Ingestion Pipeline (Finance Act & SHIF).
 - **Current:** Alpha Prototype (Bilingual Chat Interface).
 
+## 🛡️ Technical Milestone (Jan 28, 2026)
+Successfully implemented the **Sovereign RAG Pipeline**:
+- **LLM:** Mistral-7B (Local via Ollama)
+- **Embeddings:** `intfloat/e5-base-v2` (Local via HuggingFace)
+- **Vector DB:** FAISS (Local)
+- **Logic:** LangChain Expression Language (LCEL)
+- **Data Sovereignty:** 100% Offline processing for Kenyan Policy Documents.
+
 ## 🛡️ National Security Alignment
 JasiriGPT directly supports the **National Security** pillar by:
 1. **Preventing Hallucinations:** Using a strict RAG pipeline that cites official Gazette sources.
