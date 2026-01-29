@@ -33,10 +33,6 @@ JasiriGPT directly supports the **National Security** pillar by:
 2. **Data Sovereignty:** Local indexing on Kenyan-controlled hardware.
 3. **Inclusive Civic Tech:** Multilingual access to reduce social misinformation.
 
----
-*Developed for the NIRU AI Hackathon 2026*
-
-
 ## 📊 Latest Update (January 28, 2026)
 
 ### Milestone 1: Complete ✅
@@ -49,24 +45,7 @@ JasiriGPT directly supports the **National Security** pillar by:
 
 **Status:** Ready for submission (Due: Jan 30, 2026)
 
-## Daily Progress - 
 
-- Milestone 1 documentation complete
-- Performance optimizations implemented
-- Testing complete (10/10 passed)
-- Ready for mentor review
 
-## Daily Progress - 
-
-- Milestone 1 documentation complete
-- Performance optimizations implemented
-- Testing complete (10/10 passed)
-- Ready for mentor review
-
-## Daily Progress - 
-
-- Milestone 1 documentation complete
-- Performance optimizations implemented
-- Testing complete (10/10 passed)
-- Ready for mentor review
-
+---
+*Developed for the NIRU AI Hackathon 2026*
