@@ -22,11 +22,12 @@ print(f"✅ Loaded {len(docs)} document pages")
 
 # Split documents
 print("✂️ Splitting documents into chunks...")
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=800,
-    chunk_overlap=150
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,   # Increased from 500
+    chunk_overlap=200  # Increased from 50
 )
-chunks = splitter.split_documents(docs)
+# CHANGE THIS LINE:
+chunks = text_splitter.split_documents(docs) 
 print(f"✅ Created {len(chunks)} text chunks")
 
 # Create embeddings
