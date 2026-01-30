@@ -49,4 +49,5 @@ JasiriGPT directly supports the **National Security** pillar by:
 
 ---
 *Developed for the NIRU AI Hackathon 2026*
+
 By Ismail Katoya Ali
