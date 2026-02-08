@@ -4,9 +4,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
+# Force offline mode
+os.environ["HF_HUB_OFFLINE"] = "1"
+
 # --- CONFIGURATION ---
 DATA_PATH = "data"
-DB_PATH = "vectorstore/db_faiss"  # Match app.py exactly
+DB_PATH = "vectorstore/db_faiss"
 
 print("📂 Loading documents from data folder...")
 
@@ -23,18 +26,20 @@ print(f"✅ Loaded {len(docs)} document pages")
 # Split documents
 print("✂️ Splitting documents into chunks...")
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1200,   # Slightly larger to capture fulll definations
-    chunk_overlap=300,  # Significant overlap to ensure SHIF isn't cut off
+    chunk_size=1200,
+    chunk_overlap=300,
     length_function=len 
 )
-# CHANGE THIS LINE:
+
 chunks = text_splitter.split_documents(docs) 
 print(f"✅ Created {len(chunks)} text chunks")
 
-# Create embeddings
-print("🧠 Creating embeddings (this may take a while)...")
+# Create embeddings with offline mode
+print("🧠 Creating embeddings...")
 embeddings = HuggingFaceEmbeddings(
-    model_name="intfloat/e5-base-v2"
+    model_name="intfloat/e5-base-v2",
+    model_kwargs={'device': 'cpu', 'local_files_only': True},
+    encode_kwargs={'normalize_embeddings': True}
 )
 
 # Create vectorstore
