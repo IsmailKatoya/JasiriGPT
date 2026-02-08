@@ -1,13 +1,16 @@
 import os
+# Force offline mode for HuggingFace before importing LangChain components
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 import streamlit as st
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
-from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+
+# Import the centralized prompt from our module
+from prompts import QA_CHAIN_PROMPT
 
 # --- CONFIGURATION & UI ---
 st.set_page_config(page_title="JasiriGPT Sovereign AI", page_icon="🛡️", layout="wide")
@@ -25,12 +28,14 @@ st.subheader("Sovereign AI Prototype - NIRU 2026")
 # --- INITIALIZE COMPONENTS ---
 @st.cache_resource
 def load_resources():
+    # Load embeddings with strict local paths
     embeddings = HuggingFaceEmbeddings(
         model_name="intfloat/e5-base-v2",
         model_kwargs={'device': 'cpu', 'local_files_only': True},
         encode_kwargs={'normalize_embeddings': True}
     )
     
+    # Initialize Local Ollama Instance
     llm = ChatOllama(
         model="mistral",
         temperature=0,
@@ -40,33 +45,6 @@ def load_resources():
     return embeddings, llm
 
 embeddings, llm = load_resources()
-
-# --- IMPROVED BILINGUAL PROMPT ---
-template = """You are JasiriGPT, a Kenyan Government Policy Expert.
-
-INSTRUCTIONS:
-1. Provide a clear, accurate answer in English based on the context
-2. Use numbered steps or bullet points for procedures
-3. After the English answer, add a simple Kiswahili summary with ONLY key points
-4. For Kiswahili: Use simple vocabulary, translate ONLY the main idea (1-2 sentences maximum)
-5. Do NOT attempt full Kiswahili translation - just the essential point
-
-IMPORTANT:
-- SHIF = Social Health Insurance Fund (Kenya's new health insurance)
-- If you cannot translate well to Kiswahili, skip it and just provide English
-- Do not make up Kiswahili words - use English terms if needed
-
-Context from official documents:
-{context}
-
-Question: {question}
-
-Answer (English first, then brief Kiswahili summary if possible):"""
-
-QA_CHAIN_PROMPT = PromptTemplate(
-    input_variables=["context", "question"], 
-    template=template
-)
 
 # --- LOAD VECTORSTORE ---
 DB_PATH = "vectorstore/db_faiss"
@@ -86,7 +64,7 @@ if os.path.exists(DB_PATH):
         def format_docs(docs):
             return "\n\n---\n\n".join(doc.page_content for doc in docs)
         
-        # LCEL Chain
+        # LCEL Chain - Modular and Scalable
         rag_chain = (
             {
                 "context": retriever | format_docs,
@@ -113,12 +91,13 @@ if os.path.exists(DB_PATH):
             with st.chat_message("assistant"):
                 status = st.status("🔍 Processing...")
                 try:
-                    status.write("📖 Searching documents...")
+                    status.write("📖 Searching sovereign documents...")
                     source_docs = retriever.invoke(prompt)
                     
-                    status.write("🤖 Generating answer...")
+                    status.write("🤖 Generating expert response...")
                     response = rag_chain.invoke(prompt)
                     
+                    # Extract source filenames for transparency
                     sources = set([
                         doc.metadata.get('source', 'Unknown').split('/')[-1] 
                         for doc in source_docs
@@ -136,7 +115,7 @@ if os.path.exists(DB_PATH):
                     
                 except Exception as e:
                     status.update(label="❌ Error", state="error")
-                    st.error(f"Error: {str(e)}")
+                    st.error(f"Error during inference: {str(e)}")
                         
     except Exception as e:
         st.error(f"❌ Error loading database: {e}")
@@ -157,10 +136,9 @@ with st.sidebar:
     """)
     
     st.markdown("### 💡 Tips")
-    st.caption("For best results, ask specific questions like:")
+    st.caption("Ask specific policy questions:")
     st.code("""
 - How do I register for SHIF?
-- What are SHIF contributions?
 - Who is eligible for SHIF?
 - What does Article 43 say?
     """, language="text")
@@ -171,5 +149,4 @@ with st.sidebar:
     
     st.markdown("---")
     st.caption("🇰🇪 NIRU 2026 AI Challenge")
-    st.caption("Ismail Katoya Ali")
-    st.caption("HAI-2026-007")
+    st.caption("Ismail Katoya Ali | HAI-2026-007")
