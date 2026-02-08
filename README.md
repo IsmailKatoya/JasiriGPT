@@ -1,53 +1,45 @@
 # 🛡️ JasiriGPT (HAI-2026-007)
-**Secure, Multilingual Generative AI for Kenyan Policy Transparency**
+### *Secure, Multilingual Generative AI for Kenyan Policy Transparency*
 
-JasiriGPT is a localized RAG (Retrieval-Augmented Generation) assistant designed to bridge the gap between complex government information and citizen understanding. It simplifies public policies into **English, Swahili, and Sheng** while maintaining strict data sovereignty.
+JasiriGPT is a localized **Retrieval-Augmented Generation (RAG)** assistant designed to bridge the gap between complex government policies and citizen understanding. It simplifies legal information into English and Swahili while maintaining strict **Data Sovereignty**.
+
+---
 
 ## 🚀 Key Innovation: Sovereign RAG
-Unlike traditional AI assistants that rely on cloud APIs, JasiriGPT is built on an **Ubuntu 24.04 LTS** infrastructure. It processes all Kenyan legal data locally, ensuring that sensitive documents never leave the national digital jurisdiction.
+Unlike traditional AI assistants that rely on cloud APIs (OpenAI/Google), JasiriGPT processes all Kenyan legal data **locally**. It is built on an Ubuntu 24.04 LTS infrastructure, ensuring sensitive documents never leave the national digital jurisdiction.
 
-## 🛠️ Tech Stack (2026 Standard)
-- **OS:** Ubuntu 24.04 LTS (Sovereign Environment)
-- **Brain:** Ollama / Mistral-7B (Local LLM)
-- **Vector Engine:** FAISS (Facebook AI Similarity Search)
-- **Framework:** LangChain & LlamaIndex (Agentic Workflows)
-- **Linguistic Layer:** Meta NLLB-200 & Helsinki-NLP (Swahili Translation)
-- **UI:** Streamlit
-
-## 📁 Project Timeline & Progress
-- **Nov 2025:** Research Phase & Infrastructure Setup on Ubuntu.
-- **Jan 2026:** Document Ingestion Pipeline (Finance Act & SHIF).
-- **Current:** Alpha Prototype (Bilingual Chat Interface).
-
-## 🛡️ Technical Milestone (Jan 28, 2026)
-Successfully implemented the **Sovereign RAG Pipeline**:
-- **LLM:** Mistral-7B (Local via Ollama)
-- **Embeddings:** `intfloat/e5-base-v2` (Local via HuggingFace)
-- **Vector DB:** FAISS (Local)
-- **Logic:** LangChain Expression Language (LCEL)
-- **Data Sovereignty:** 100% Offline processing for Kenyan Policy Documents.
-
-## 🛡️ National Security Alignment
-JasiriGPT directly supports the **National Security** pillar by:
-1. **Preventing Hallucinations:** Using a strict RAG pipeline that cites official Gazette sources.
-2. **Data Sovereignty:** Local indexing on Kenyan-controlled hardware.
-3. **Inclusive Civic Tech:** Multilingual access to reduce social misinformation.
-
-## 📊 Latest Update (January 28, 2026)
-
-### Milestone 1: Complete ✅
-- Architecture diagram with Agentic Router design
-- Security whitepaper on Sovereign AI principles  
-- Executive summary and documentation
-- Performance optimized: 8s avg query time (33% faster)
-- Testing: 10/10 queries passed with 90% accuracy
-- Submission package prepared for mentor review
-
-**Status:** Ready for submission (Due: Jan 30, 2026)
+## 🛠️ Tech Stack (2026 Sovereign Standard)
+* **OS:** Ubuntu 24.04 LTS
+* **Brain:** Mistral-7B via **Ollama** (100% Offline)
+* **Vector Engine:** FAISS (Facebook AI Similarity Search)
+* **Embeddings:** `intfloat/e5-base-v2` (Running on local CPU/GPU)
+* **Framework:** LangChain (LCEL)
+* **UI:** Streamlit
 
 
 
 ---
-*Developed for the NIRU AI Hackathon 2026*
 
-By Ismail Katoya Ali
+## 📁 Project Structure
+- `app.py`: Streamlit interface with real-time streaming responses.
+- `prompts.py`: Modularized bilingual ChatML templates for high accuracy.
+- `ingest.py`: Pipeline for indexing PDF policy documents (e.g., Finance Act, SHIF).
+- `requirements.txt`: Project dependency manifest.
+- `vectorstore/`: Local FAISS database for instant retrieval.
+
+## 🛡️ National Security & Transparency Alignment
+JasiriGPT supports the Kenyan National Security pillar by:
+1.  **Preventing Hallucinations:** Using a strict RAG pipeline that cites official Gazette sources.
+2.  **Data Sovereignty:** Local indexing on Kenyan-controlled hardware prevents external data harvesting.
+3.  **Inclusive Civic Tech:** Multilingual access (English/Swahili) to reduce social misinformation.
+
+---
+
+## 📊 Milestone Status: Phase 1 Complete ✅
+* **Architecture:** Modular design with decoupled prompt logic.
+* **Performance:** Optimized query time (~8s) using streaming output.
+* **Accuracy:** 90%+ factual grounding on verified SHIF and Finance Act documents.
+* **Date:** February 8, 2026
+
+---
+**Developed for the NIRU AI Hackathon 2026** **By Ismail Katoya Ali**
