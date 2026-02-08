@@ -14,6 +14,7 @@ st.markdown("""
     <style>
     .main { background-color: #f5f7f9; }
     .stChatFloatingInputContainer { bottom: 20px; }
+    .stChatMessage { border-radius: 10px; margin-bottom: 10px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -24,35 +25,36 @@ st.subheader("Sovereign AI Prototype - NIRU 2026")
 @st.cache_resource
 def load_resources():
     try:
-        # Use local embeddings
+        # Optimized local embeddings
         embeddings = HuggingFaceEmbeddings(
             model_name="intfloat/e5-base-v2",
             model_kwargs={'device': 'cpu'},
             encode_kwargs={'normalize_embeddings': True}
         )
     except Exception:
-        st.warning("⚠️ Connection issue. Using local_files_only mode.")
+        st.warning("⚠️ High latency or offline. Using local_files_only mode.")
         embeddings = HuggingFaceEmbeddings(
             model_name="intfloat/e5-base-v2",
             model_kwargs={'local_files_only': True}
         )
         
-    # Mistral with Temperature 0 for strictly factual responses
-    llm = ChatOllama(model="mistral", temperature=0)
+    # Enable Streaming for better UX and temp 0 for accuracy
+    llm = ChatOllama(model="mistral", temperature=0, streaming=True)
     return embeddings, llm
 
 embeddings, llm = load_resources()
 
 # --- ANTI-HALLUCINATION BILINGUAL PROMPT ---
 template = """You are JasiriGPT, the Lead Policy Analyst for the Kenyan Government.
-Your goal is to provide accurate, transparent information based ONLY on the context provided.
+Your goal is to provide accurate information based ONLY on the context provided.
 
 STRICT RULES:
-1. Grounding: If the answer is not in the context, say "Habari hii haipatikani kwenye hifadhi yetu." Do not make up facts.
-2. Structure: 
-   - First, provide a clear 2-3 sentence explanation in English.
-   - Second, provide a direct Swahili (Kiswahili Sanifu) translation of the key fact. Avoid medical jargon unless it is in the text.
-3. Anti-Hallucination: Before translating to Swahili, verify the fact exists in the English context.
+1. GROUNDING: If the answer is not in the context, say "Samahani, maelezo haya hayapatikani kwenye hifadhi yetu." 
+2. NO GUESSING: If the context mentions 'shifts' (time/work), do not assume it means 'SHIF' (Health Fund).
+3. STRUCTURE: 
+   - Start with a 2-sentence English explanation.
+   - Follow with 'KWA KISWAHILI:' and a direct Swahili translation.
+   - Do not translate the name 'SHIF' or 'Social Health Insurance Fund'.
 
 Context: {context}
 
@@ -76,13 +78,13 @@ if os.path.exists(DB_PATH):
             allow_dangerous_deserialization=True
         )
         
-        # k=3 for a balance of speed and context
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        # Increased k for better coverage of complex documents
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
         
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
         
-        # LCEL Chain
+        # LCEL Chain for streaming
         rag_chain = (
             {
                 "context": retriever | format_docs,
@@ -101,40 +103,44 @@ if os.path.exists(DB_PATH):
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
-        if prompt := st.chat_input("Ask about Finance Act, SHIF, or Constitution..."):
+        if prompt := st.chat_input("Ask about SHIF, Finance Act, or Constitution..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
             
             with st.chat_message("assistant"):
-                status = st.status("🔍 Processing...")
+                # Use a placeholder for the streaming effect
+                response_placeholder = st.empty()
+                full_response = ""
+                
                 try:
-                    # FIX: Use .invoke() instead of .get_relevant_documents()
-                    status.write("Reading policy documents...")
+                    # Retrieve sources for citation
                     source_docs = retriever.invoke(prompt)
                     
-                    status.write("Translating and formatting...")
-                    response = rag_chain.invoke(prompt)
+                    # Stream the LLM response
+                    for chunk in rag_chain.stream(prompt):
+                        full_response += chunk
+                        response_placeholder.markdown(full_response + "▌")
                     
-                    # Extract source names
+                    # Process sources
                     sources = set([
                         doc.metadata.get('source', 'Unknown').split('/')[-1] 
                         for doc in source_docs
                     ])
                     source_text = f"\n\n📄 **Sources:** {', '.join(sources)}"
                     
-                    full_response = response + source_text
-                    status.update(label="✅ Response Generated", state="complete", expanded=False)
+                    # Finalize message
+                    final_output = full_response + source_text
+                    response_placeholder.markdown(final_output)
                     
-                    st.markdown(full_response)
                     st.session_state.messages.append({
                         "role": "assistant", 
-                        "content": full_response
+                        "content": final_output
                     })
                     
                 except Exception as e:
-                    status.update(label="❌ System Error", state="error")
-                    st.error(f"Error: {str(e)}")
+                    st.error(f"❌ System Error: {str(e)}")
+                    st.warning("Make sure Ollama is running (`ollama serve`).")
                         
     except Exception as e:
         st.error(f"❌ Error loading the database: {e}")
@@ -145,10 +151,11 @@ else:
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/shield.png", width=80)
     st.markdown("### 🛡️ JasiriGPT Status")
-    st.info("Sovereign Mode: Localhost Only")
+    st.success("Sovereign Mode: Active")
+    st.info("Mistral 7B + FAISS")
     
-    if st.button("🗑️ Clear Conversation"):
+    if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
         st.rerun()
     
-    st.caption("🇰🇪 Developed for NIRU 2026")
+    st.caption("🇰🇪 NIRU 2026 Innovation Challenge")
