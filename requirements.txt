@@ -1,0 +1,21 @@
+# --- CORE WEB & UI ---
+streamlit
+
+# --- LANGCHAIN & LLM ORCHESTRATION ---
+langchain
+langchain-community
+langchain-huggingface
+langchain-ollama
+langchain-core
+
+# --- VECTOR DATABASE & SEARCH ---
+faiss-cpu
+numpy
+
+# --- EMBEDDINGS & NLP ---
+sentence-transformers
+huggingface-hub
+
+# --- UTILITIES ---
+pypdf
+python-dotenv
