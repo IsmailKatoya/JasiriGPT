@@ -3,6 +3,8 @@
 
 JasiriGPT is a localized **Retrieval-Augmented Generation (RAG)** assistant designed to bridge the gap between complex government policies and citizen understanding. It simplifies legal information into English and Swahili while maintaining strict **Data Sovereignty**.
 
+
+
 ---
 
 ## 🚀 Key Innovation: Sovereign RAG
@@ -16,7 +18,13 @@ Unlike traditional AI assistants that rely on cloud APIs (OpenAI/Google), Jasiri
 * **Framework:** LangChain (LCEL)
 * **UI:** Streamlit
 
+---
 
+## ⚡ Speed & Efficiency Optimization
+To ensure JasiriGPT remains accessible on standard hardware (non-GPU environments), the following optimizations were implemented:
+- **Reduced Context Window:** 2048 tokens for faster CPU inference.
+- **Selective Retrieval:** Limited to top 2 relevant document chunks ($k=2$).
+- **Prediction Hard-Cap:** Limited to 250 tokens to ensure punchy, concise English and Kiswahili summaries.
 
 ---
 
@@ -26,20 +34,12 @@ Unlike traditional AI assistants that rely on cloud APIs (OpenAI/Google), Jasiri
 - `ingest.py`: Pipeline for indexing PDF policy documents (e.g., Finance Act, SHIF).
 - `requirements.txt`: Project dependency manifest.
 - `vectorstore/`: Local FAISS database for instant retrieval.
-
-## 🛡️ National Security & Transparency Alignment
-JasiriGPT supports the Kenyan National Security pillar by:
-1.  **Preventing Hallucinations:** Using a strict RAG pipeline that cites official Gazette sources.
-2.  **Data Sovereignty:** Local indexing on Kenyan-controlled hardware prevents external data harvesting.
-3.  **Inclusive Civic Tech:** Multilingual access (English/Swahili) to reduce social misinformation.
+- `LICENSE`: MIT License.
 
 ---
 
-## 📊 Milestone Status: Phase 1 Complete ✅
-* **Architecture:** Modular design with decoupled prompt logic.
-* **Performance:** Optimized query time (~8s) using streaming output.
-* **Accuracy:** 90%+ factual grounding on verified SHIF and Finance Act documents.
-* **Date:** February 8, 2026
-
----
-**Developed for the NIRU AI Hackathon 2026** **By Ismail Katoya Ali**
+## ⚙️ Setup & Installation
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/](https://github.com/)[your-username]/jasirigpt.git
+   cd jasirigpt

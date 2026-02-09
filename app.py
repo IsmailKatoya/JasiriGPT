@@ -1,5 +1,5 @@
 import os
-# Force offline mode for HuggingFace before importing LangChain components
+# Force offline mode
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 import streamlit as st
@@ -9,7 +9,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-# Import the centralized prompt from our module
+# Import our optimized prompt logic
 from prompts import QA_CHAIN_PROMPT
 
 # --- CONFIGURATION & UI ---
@@ -23,24 +23,23 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🛡️ JasiriGPT: Kenyan Policy Assistant")
-st.subheader("Sovereign AI Prototype - NIRU 2026")
+st.subheader("Sovereign AI Prototype (Optimized) - NIRU 2026")
 
 # --- INITIALIZE COMPONENTS ---
 @st.cache_resource
 def load_resources():
-    # Load embeddings with strict local paths
     embeddings = HuggingFaceEmbeddings(
         model_name="intfloat/e5-base-v2",
         model_kwargs={'device': 'cpu', 'local_files_only': True},
         encode_kwargs={'normalize_embeddings': True}
     )
     
-    # Initialize Local Ollama Instance
+    # PERFORMANCE TUNED: Lower context and prediction limit for faster local CPU inference
     llm = ChatOllama(
         model="mistral",
         temperature=0,
-        num_predict=400,
-        num_ctx=3072
+        num_predict=250,  # Slightly higher than 200 to ensure Kiswahili isn't cut off
+        num_ctx=2048      
     )
     return embeddings, llm
 
@@ -57,14 +56,15 @@ if os.path.exists(DB_PATH):
             allow_dangerous_deserialization=True
         )
         
+        # SPEED OPTIMIZED: Retrieval limited to top 2 chunks
         retriever = vectorstore.as_retriever(
-            search_kwargs={"k": 3}
+            search_kwargs={"k": 2} 
         )
         
         def format_docs(docs):
-            return "\n\n---\n\n".join(doc.page_content for doc in docs)
+            # Limit each chunk to 1000 chars to stay within the faster context window
+            return "\n\n---\n\n".join(doc.page_content[:1000] for doc in docs)
         
-        # LCEL Chain - Modular and Scalable
         rag_chain = (
             {
                 "context": retriever | format_docs,
@@ -89,15 +89,14 @@ if os.path.exists(DB_PATH):
                 st.markdown(prompt)
             
             with st.chat_message("assistant"):
-                status = st.status("🔍 Processing...")
+                status = st.status("⚡ Fast Processing...")
                 try:
-                    status.write("📖 Searching sovereign documents...")
+                    status.write("📖 Quick Retrieval...")
                     source_docs = retriever.invoke(prompt)
                     
-                    status.write("🤖 Generating expert response...")
+                    status.write("🤖 Generating...")
                     response = rag_chain.invoke(prompt)
                     
-                    # Extract source filenames for transparency
                     sources = set([
                         doc.metadata.get('source', 'Unknown').split('/')[-1] 
                         for doc in source_docs
@@ -105,7 +104,7 @@ if os.path.exists(DB_PATH):
                     source_text = f"\n\n📄 **Sources:** {', '.join(sources)}"
                     
                     full_response = response + source_text
-                    status.update(label="✅ Complete", state="complete", expanded=False)
+                    status.update(label="✅ Done", state="complete", expanded=False)
                     
                     st.markdown(full_response)
                     st.session_state.messages.append({
@@ -115,7 +114,7 @@ if os.path.exists(DB_PATH):
                     
                 except Exception as e:
                     status.update(label="❌ Error", state="error")
-                    st.error(f"Error during inference: {str(e)}")
+                    st.error(f"Error: {str(e)}")
                         
     except Exception as e:
         st.error(f"❌ Error loading database: {e}")
@@ -126,27 +125,14 @@ else:
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/shield.png", width=80)
     st.markdown("### 🛡️ System Status")
-    st.success("✅ Offline Mode Active")
+    st.success("✅ Offline & Speed Optimized")
     
-    st.markdown("### 📚 Documents Loaded")
-    st.info("""
-    - Finance Act 2024
-    - SHIF Regulations 2024
-    - Constitution of Kenya 2010
-    """)
-    
-    st.markdown("### 💡 Tips")
-    st.caption("Ask specific policy questions:")
-    st.code("""
-- How do I register for SHIF?
-- Who is eligible for SHIF?
-- What does Article 43 say?
-    """, language="text")
+    st.markdown("### 📚 Knowledge Base")
+    st.info("- Finance Act 2024\n- SHIF Regs 2024\n- Constitution 2010")
     
     if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
         st.rerun()
     
     st.markdown("---")
-    st.caption("🇰🇪 NIRU 2026 AI Challenge")
-    st.caption("Ismail Katoya Ali | HAI-2026-007")
+    st.caption("🇰🇪 NIRU 2026 | Ismail Katoya Ali")
