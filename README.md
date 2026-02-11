@@ -46,3 +46,6 @@ To ensure JasiriGPT remains accessible on standard hardware (non-GPU environment
 
 ## 🔮 Future Roadmap
 - Integration of USSD/SMS gateways for offline policy access in rural Kenya.
+
+## 🔮 Future Roadmap
+- Integration of USSD/SMS gateways for offline policy access in rural Kenya.
