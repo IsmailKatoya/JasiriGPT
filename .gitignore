@@ -1,6 +1,16 @@
-venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Project specific
 vectorstore/
-data/
-.env
+*.backup
+
+# IDE
+.vscode/
+.idea/
