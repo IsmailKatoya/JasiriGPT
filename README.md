@@ -43,3 +43,6 @@ To ensure JasiriGPT remains accessible on standard hardware (non-GPU environment
    ```bash
    git clone [https://github.com/](https://github.com/)[your-username]/jasirigpt.git
    cd jasirigpt
+
+## 🔮 Future Roadmap
+- Integration of USSD/SMS gateways for offline policy access in rural Kenya.
