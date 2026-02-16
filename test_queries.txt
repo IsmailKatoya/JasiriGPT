@@ -1,0 +1,12 @@
+# JasiriGPT Test Queries (Feb 16, 2026)
+
+## SHIF Tests
+✅ What is SHIF? - Response: Accurate definition
+✅ How do I register? - Response: 8-step process
+✅ SHIF contributions? - Response: 2.75% salary
+
+## Finance Act Tests
+⏳ List tax changes - Status: Needs improvement
+
+## Constitution Tests
+⏳ Article 43 rights - Status: Not yet tested
