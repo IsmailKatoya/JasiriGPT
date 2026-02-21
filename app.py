@@ -1,5 +1,5 @@
 import os
-# Force offline mode
+# Force offline mode for HuggingFace
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 import streamlit as st
@@ -9,7 +9,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-# Import our optimized prompt logic
+# Import the centralized prompt from our module
 from prompts import QA_CHAIN_PROMPT
 
 # --- CONFIGURATION & UI ---
@@ -23,23 +23,25 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🛡️ JasiriGPT: Kenyan Policy Assistant")
-st.subheader("Sovereign AI Prototype (Optimized) - NIRU 2026")
+st.subheader("Sovereign AI Prototype (Speed Optimized) - NIRU 2026")
 
 # --- INITIALIZE COMPONENTS ---
 @st.cache_resource
 def load_resources():
+    # Load light-weight embeddings
     embeddings = HuggingFaceEmbeddings(
         model_name="intfloat/e5-base-v2",
         model_kwargs={'device': 'cpu', 'local_files_only': True},
         encode_kwargs={'normalize_embeddings': True}
     )
     
-    # PERFORMANCE TUNED: Lower context and prediction limit for faster local CPU inference
+    # ⚡ EMERGENCY SPEED UPDATE: Switched to Phi-3-Mini for CPU Efficiency
+    # This prevents the 30-minute lag experienced with larger models
     llm = ChatOllama(
-        model="mistral",
+        model="phi3", 
         temperature=0,
-        num_predict=250,  # Slightly higher than 200 to ensure Kiswahili isn't cut off
-        num_ctx=2048      
+        num_predict=200,  # Short, punchy answers are faster
+        num_ctx=2048      # Optimized context window for RAM stability
     )
     return embeddings, llm
 
@@ -56,15 +58,16 @@ if os.path.exists(DB_PATH):
             allow_dangerous_deserialization=True
         )
         
-        # SPEED OPTIMIZED: Retrieval limited to top 2 chunks
+        # SPEED OPTIMIZED: Retrieving only the most relevant context
         retriever = vectorstore.as_retriever(
-            search_kwargs={"k": 2} 
+            search_kwargs={"k": 2}
         )
         
         def format_docs(docs):
-            # Limit each chunk to 1000 chars to stay within the faster context window
-            return "\n\n---\n\n".join(doc.page_content[:1000] for doc in docs)
+            # Crop content to prevent context overflow
+            return "\n\n".join(doc.page_content[:900] for doc in docs)
         
+        # LCEL Chain
         rag_chain = (
             {
                 "context": retriever | format_docs,
@@ -89,12 +92,12 @@ if os.path.exists(DB_PATH):
                 st.markdown(prompt)
             
             with st.chat_message("assistant"):
-                status = st.status("⚡ Fast Processing...")
+                status = st.status("⚡ Fast Inference Active...")
                 try:
-                    status.write("📖 Quick Retrieval...")
+                    status.write("📖 Context found...")
                     source_docs = retriever.invoke(prompt)
                     
-                    status.write("🤖 Generating...")
+                    status.write("🤖 Thinking...")
                     response = rag_chain.invoke(prompt)
                     
                     sources = set([
@@ -104,7 +107,7 @@ if os.path.exists(DB_PATH):
                     source_text = f"\n\n📄 **Sources:** {', '.join(sources)}"
                     
                     full_response = response + source_text
-                    status.update(label="✅ Done", state="complete", expanded=False)
+                    status.update(label="✅ Complete", state="complete", expanded=False)
                     
                     st.markdown(full_response)
                     st.session_state.messages.append({
@@ -125,10 +128,8 @@ else:
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/shield.png", width=80)
     st.markdown("### 🛡️ System Status")
-    st.success("✅ Offline & Speed Optimized")
-    
-    st.markdown("### 📚 Knowledge Base")
-    st.info("- Finance Act 2024\n- SHIF Regs 2024\n- Constitution 2010")
+    st.success("✅ Phi-3 Engine: High Speed")
+    st.info("Performance: CPU-Optimized")
     
     if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
