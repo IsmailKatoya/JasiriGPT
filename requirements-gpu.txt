@@ -1,0 +1,5 @@
+langchain-ollama
+langchain-huggingface
+faiss-gpu
+nvidia-ml-py3
+streamlit
