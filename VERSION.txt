@@ -1,0 +1,36 @@
+
+JasiriGPT v0.1.0 - Milestone 1 Release
+Release Date: February 16, 2026
+
+FEATURES:
+✅ Sovereign Offline RAG pipeline (100% local)
+✅ Kenyan policy Coverage: document retrieval (SHIF, Finance Act, Constitution)
+✅ Sub-5 min response time
+✅ FAISS vectorstore with e5-base-v2 embeddings
+✅ Mistral 7B language model
+✅ Streamlit web interface
+
+PERFORMANCE:
+- Average response: 6-8 seconds
+- Document retrieval: k=3 chunks
+- Context limit: 700 chars per chunk
+- LLM: Mistral (num_predict=150, num_ctx=1536)
+
+
+✅ Working prototype
+✅ Document ingestion pipeline
+✅ Query-response system
+✅ Performance optimization
+✅ Offline deployment ready
+
+KNOWN ISSUES:
+- SHIF definition queries need improvement
+- Finance Act indexing requires verification
+- Kiswahili responses disabled for accuracy
+
+NEXT MILESTONE:
+- Swahili and Sheng language intergration and user-interface expansion.
+- User testing and evaluation (Milestone 2)
+- Performance benchmarking
+- Additional document sources
+EOF
