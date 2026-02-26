@@ -26,8 +26,8 @@ print(f"✅ Loaded {len(docs)} document pages")
 # Split documents
 print("✂️ Splitting documents into chunks...")
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1200,
-    chunk_overlap=300,
+    chunk_size=1000,
+    chunk_overlap=200,
     length_function=len 
 )
 
