@@ -62,3 +62,8 @@ To ensure JasiriGPT remains accessible on standard hardware (non-GPU environment
 - ✅ Finance Act queries: Functional
 - ✅ Constitution queries: Operational
 - ✅ Bilingual responses: English + Kiswahili summaries
+### JasiriGPT Milestone 1
+- **Engine:** Mistral-7B (Sovereign)
+- **Quality:** k=3 retrieval depth
+- **Safety:** CPU Thermal Capping (2-threads)
+- **Bilingual:** English + Kiswahili summaries
