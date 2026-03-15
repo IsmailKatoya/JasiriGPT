@@ -7,33 +7,31 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from prompts import QA_CHAIN_PROMPT
 
-# Force offline mode
+# Force offline mode for National Sovereignty (Criterion A2)
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 # --- UI CONFIG ---
 st.set_page_config(page_title="JasiriGPT v0.1.0", page_icon="🛡️", layout="wide")
 
 st.title("🛡️ JasiriGPT: Kenyan Policy Assistant")
-st.subheader("v0.1.0 - Milestone 1 Release (Quality Focus)")
+st.subheader("⚡ High-Speed MVP Demo Mode")
 
 # --- INITIALIZE COMPONENTS ---
 @st.cache_resource
 def load_resources():
-    # High-quality embeddings (768-dim)
     embeddings = HuggingFaceEmbeddings(
         model_name="intfloat/e5-base-v2",
         model_kwargs={'device': 'cpu', 'local_files_only': True},
         encode_kwargs={'normalize_embeddings': True}
     )
     
-    # Sustainable Mistral Config: Capped threads to protect hardware
+    # 🏎️ PHI-3.5 OPTIMIZATION: Lightweight yet powerful for CPU inference
     llm = ChatOllama(
-        model="mistral",
-        temperature=0.1,    # Slight creativity for better language flow
-        num_ctx=2048,       # Full context for better policy reading
-        num_thread=2,       # 🛡️ Thermal safety: cap CPU usage
-        num_predict=256,    # Allow for complete, high-quality answers
-        repeat_penalty=1.2
+        model="phi3.5", 
+        temperature=0.0,      # Deterministic answers for policy accuracy
+        num_ctx=1024,        # Optimized context window for speed
+        num_thread=8,        # Maximize your CPU cores
+        num_predict=200,     # Precise, punchy answers for judges
     )
     return embeddings, llm
 
@@ -47,16 +45,15 @@ if os.path.exists(DB_PATH):
         vectorstore = FAISS.load_local(
             DB_PATH, 
             embeddings, 
-            allow_dangerous_deserialization=True
+            allow_dangerous_deserialization=True # Keep for loading security
         )
         
-        # QUALITY SEARCH: Retrieve top 3 chunks for better context
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+        # ⚡ RETRIEVAL: k=2 for speed, relies on your new 300-char overlap from ingest.py
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
         
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
         
-        # RAG Chain
         rag_chain = (
             {
                 "context": retriever | format_docs,
@@ -75,52 +72,47 @@ if os.path.exists(DB_PATH):
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
-        if prompt := st.chat_input("Ask about Finance Act, SHIF, or Constitution..."):
+        if prompt := st.chat_input("Ask about Finance Bill, SHIF, or the Constitution..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
             
             with st.chat_message("assistant"):
-                status = st.status("🔍 Deep Policy Analysis Active...")
+                status = st.status("🔍 Verifying Policy Documents...")
                 try:
-                    status.write("📖 Reading legal documents...")
+                    # 1. Faster retrieval
                     source_docs = retriever.invoke(prompt)
                     
-                    status.write("🤖 Thinking (Thermal Safety Mode)...")
+                    # 2. Faster Phi-3.5 Inference
                     response = rag_chain.invoke(prompt)
                     
-                    sources = set([
-                        doc.metadata.get('source', 'Unknown').split('/')[-1] 
-                        for doc in source_docs
-                    ])
-                    source_text = f"\n\n📄 **Sources:** {', '.join(sources)}"
+                    sources = set([doc.metadata.get('source', 'Unknown').split('/')[-1] for doc in source_docs])
+                    full_response = response + f"\n\n📄 **Sources:** {', '.join(sources)}"
                     
-                    full_response = response + source_text
-                    status.update(label="✅ Analysis Complete", state="complete", expanded=False)
-                    
+                    status.update(label="✅ Policy Verified", state="complete", expanded=False)
                     st.markdown(full_response)
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
                 except Exception as e:
-                    status.update(label="❌ Error", state="error")
-                    st.error(f"Error during inference: {str(e)}")
+                    status.update(label="❌ System Error", state="error")
+                    st.error(f"Error: {str(e)}")
                             
     except Exception as e:
-        st.error(f"❌ Database Error: {e}. Try running ingest.py again.")
+        st.error(f"❌ Database Error: {e}. Ensure ingest.py ran correctly.")
 else:
-    st.warning("⚠️ Vectorstore not found! Run: python ingest.py")
+    st.warning("⚠️ Vectorstore not found! Run 'python ingest.py' first.")
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/shield.png", width=80)
-    st.markdown("### 🛡️ System Status")
-    st.success("✅ Mistral: Quality Mode")
-    st.info("CPU: Sustainability Cap (2-Thread)")
+    st.image("https://img.icons8.com/fluency/96/shield.png", width=60)
+    st.markdown("### 🛡️ MVP Controls")
+    st.success("Mode: Sovereign Offline")
+    st.info("Engine: Phi-3.5 (Optimized)")
     
-    if st.button("🗑️ Clear Chat"):
+    if st.button("🗑️ Reset Demo"):
         st.session_state.messages = []
         st.rerun()
     
     st.markdown("---")
-    st.caption("🇰🇪 NIRU 2026 | Ismail Katoya Ali")
-    st.caption("v0.1.0 Milestone 1 Release")
+    st.caption("🇰🇪 NIRU AI Hackathon 2026")
+    st.caption("Candidate: Ismail Katoya Ali")
